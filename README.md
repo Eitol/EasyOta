@@ -70,6 +70,7 @@ Example
 If we add a file to the /opt/firmware directory named 1245.bin then the version that would return this endpoint is 1245
 
 <b>/firmware</b>:
+
 Returns the file of the latest firmware added in the directory /opt/firmware
 
 
@@ -107,7 +108,7 @@ class OTAServer:
 
     @staticmethod
     @get(OTA_GET_VERSION_ENDPOINT)
-    def get_version():
+    def get_version() -> str:
         raw_version = OTAServer.get_latest_fw_version()
         if raw_version is None or len(raw_version) == 0:
             response.status = 404
