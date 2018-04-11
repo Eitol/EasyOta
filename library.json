@@ -1,0 +1,22 @@
+{
+  "name": "EasyOta",
+  "keywords": "ota, over,to, air,esp8266",
+  "description": " The easiest way to implement ota on an esp8266 based chip using an HTTP server",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/Eitol/EasyOta.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Hector Oliveros",
+      "maintainer": true
+    }
+  ],
+  "dependencies": {
+  },
+  "version": "1.0",
+  "frameworks": "arduino",
+  "platforms": "espressif8266"
+}
