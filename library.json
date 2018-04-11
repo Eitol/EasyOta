@@ -15,8 +15,7 @@
       "maintainer": true
     }
   ],
-  "dependencies": {
-  },
+  "license": "MIT",
   "version": "1.0",
   "frameworks": "arduino",
   "platforms": "espressif8266"
