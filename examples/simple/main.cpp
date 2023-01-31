@@ -13,7 +13,7 @@ const char *password = "123456789abc";
 #define OTA_SERVER_URL "http://192.168.3.243:8266"
 #define OTA_GET_VERSION_ENDPOINT "/version"
 #define OTA_GET_FIRMWARE_ENDPOINT "/firmware"
-
+WiFiClient client;
 
 void setup() {
     Serial.begin(9600);
@@ -28,7 +28,7 @@ void setup() {
             true
     );
     EasyOTA ota(config);
-    ota.runUpdateRoutine();
+    ota.runUpdateRoutine(client);
 }
 
 void loop() {}

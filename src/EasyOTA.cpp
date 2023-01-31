@@ -19,20 +19,20 @@ EasyOTA::EasyOTA(OTAConfig config) : config(std::move(config)) {
     this->versionURL = this->config.serverUrl + this->config.versionEndpoint;
 }
 
-void EasyOTA::runUpdateRoutine() {
-    UpdateCheckResult result = checkForUpdates();
+void EasyOTA::runUpdateRoutine(WiFiClient client) {
+    UpdateCheckResult result = checkForUpdates(client);
 
     OTADebug::debugCheckUpdateResult(result, config.debug);
 
     if (result.result == DIFFERENT_VERSION) {
-        HTTPUpdateResult r = updateFirmware();
+        HTTPUpdateResult r = updateFirmware(client);
         OTADebug::debugCheckUpdateResult(r, config.debug);
     }
 }
 
-UpdateCheckResult EasyOTA::checkForUpdates() {
+UpdateCheckResult EasyOTA::checkForUpdates(WiFiClient client) {
     UpdateCheckResult result;
-    httpClient.begin(this->versionURL);
+    httpClient.begin(client, this->versionURL);
     int httpCode = httpClient.GET();
     Serial.print("CODE: "+httpCode);
     if (httpCode == 200) {
@@ -53,6 +53,6 @@ UpdateCheckResult EasyOTA::checkForUpdates() {
     return result;
 }
 
-HTTPUpdateResult EasyOTA::updateFirmware() {
-    return ESPhttpUpdate.update(this->firmwareURL);
+HTTPUpdateResult EasyOTA::updateFirmware(WiFiClient client) {
+    return ESPhttpUpdate.update(client, this->firmwareURL);
 }
