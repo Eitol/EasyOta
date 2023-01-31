@@ -30,6 +30,7 @@ Steps to use:
 #define OTA_GET_VERSION_ENDPOINT "/version" 
 // This endpoint must return the firmware file
 #define OTA_GET_FIRMWARE_ENDPOINT "/firmware"
+WiFiClient client;
 
 const char *ssid = "TP-LINK_E056F4";
 const char *password = "05127238";
@@ -51,7 +52,7 @@ void setup() {
 }
 
 void loop() {        
-    ota.runUpdateRoutine();
+    ota.runUpdateRoutine(client);
     delay(20000); 
 }
 ```
