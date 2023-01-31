@@ -17,20 +17,20 @@ public:
     /**
      *
      */
-    void runUpdateRoutine();
+    void runUpdateRoutine(WiFiClient client);
 
     /**
      * Asks the server about the current firmware version.
      * For it uses the config.versionEndpoint.
      * @return The version ot the current firmware
      */
-    UpdateCheckResult checkForUpdates();
+    UpdateCheckResult checkForUpdates(WiFiClient client);
 
     /**
      * Update the firmware ussing the config.firmwareEndpoint
      * @return The result
      */
-    HTTPUpdateResult updateFirmware();
+    HTTPUpdateResult updateFirmware(WiFiClient client);
 
 
 private:
