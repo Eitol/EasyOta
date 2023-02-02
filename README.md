@@ -27,9 +27,9 @@ Steps to use:
 
 #define OTA_SERVER_URL "http://192.168.0.222:8266"
 // This API endpoint must return an integer indicating the version of the server's latest firmware (eg "1244")
-#define OTA_GET_VERSION_ENDPOINT "/version" 
+#define OTA_GET_VERSION_ENDPOINT "/version" // or /version.php?device=MyDeviceName if using Apache OTA
 // This endpoint must return the firmware file
-#define OTA_GET_FIRMWARE_ENDPOINT "/firmware"
+#define OTA_GET_FIRMWARE_ENDPOINT "/firmware" // or /firmware.php?device=MyDeviceName if using Apache OTA
 WiFiClient client;
 
 const char *ssid = "TP-LINK_E056F4";
@@ -142,3 +142,91 @@ if __name__ == '__main__':
 <br><br>
 ![](doc/ota_sec.png) 
 
+#### Apache OTA server example
+
+This API is capable of managing multiple firmware images for different devices.
+
+The following API has two endpoints:
+
+<b>/version.php?device={device}</b>:
+
+Returns the version of the latest firmware for the specified added in the directory /firmware
+
+The version is obtained by the name of the file removing the extension .bin and the device name.
+
+Example
+/firmware/MyTemperatureSensor_1245.bin
+http://myupdateserver.local/version.php?device=MyTemperatureSensor would return 1245
+
+<b>/firmware.php?device={device}</b>:
+
+Returns the file of the latest firmware for the specified device added in the directory /firmware
+
+<b>version.php</b>
+```php
+
+<?php
+header("Content-Type:text/html");
+include ("functions.php");
+if (isset($_GET['device']) && $_GET['device']!="") {
+	$device = $_GET['device'];
+	echo return_version($device);
+}else{
+	die("Invalid Request");
+	}
+?>
+
+```
+<b>firmware.php</b>
+```php
+
+<?php
+header("Content-Type:text/html");
+include ("functions.php");
+if (isset($_GET['device']) && $_GET['device']!="") {
+	$device = $_GET['device'];
+	$version = return_version($device);
+	$filename =  $device . "_" . $version . ".bin";
+	return_file($filename);
+}else{
+	die("Invalid Request");
+	}
+?>
+
+```
+
+<b>functions.php</b>
+```php
+
+<?php
+function return_version($device){
+	$allfiles = scandir($_SERVER["DOCUMENT_ROOT"] . "/firmware", SCANDIR_SORT_ASCENDING, null); // for the file format like {device}_{version}.bin
+    $devicefiles = array();
+    foreach ($allfiles as $string) {
+        if (str_contains($string, $device)) {
+            $devicefiles[] = str_replace($device."_","",str_replace(".bin","",$string));
+        }
+    }
+    return max($devicefiles);
+}
+
+function return_file($filename)
+{
+	$attachment_location = $_SERVER["DOCUMENT_ROOT"] . "/firmware/" . $filename;
+        if (file_exists($attachment_location)) {
+
+            header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
+            header("Cache-Control: public"); // needed for internet explorer
+            header("Content-Type: application/octet-stream");
+            header("Content-Transfer-Encoding: Binary");
+            header("Content-Length:".filesize($attachment_location));
+            header("Content-Disposition: attachment; filename=" . $filename);
+            readfile($attachment_location);
+            die();        
+        } else {
+            die("Error: File not found.");
+        } 
+}
+?>
+
+```
